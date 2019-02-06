@@ -10,8 +10,9 @@ app.initialize = function(client) {
 app.use(express.urlencoded({
     extended: false
 }));
-app.use(morgan('combined'));
+app.use(morgan('tiny'));
 app.use(express.static('public'));
+app.get('/health',(req,res) => res.send(200));
 app.get('/numbers',(req,res) => {
     let client = req.app.client;
     client.query(`select * from app_data`)
