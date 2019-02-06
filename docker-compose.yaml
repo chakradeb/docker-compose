@@ -1,0 +1,32 @@
+version: '3'
+services:
+  web-service1:
+    container_name: myapp
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+    depends_on:
+      - db-service
+  web-service2:
+    container_name: myapp2
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8000"
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+    depends_on:
+      - db-service
+  db-service:
+    container_name: mydb
+    image: postgres:alpine
+    volumes:
+      - psql-data:/var/lib/postgresql/data
+volumes:
+  psql-data:
+    driver: local
