@@ -1,16 +1,6 @@
 version: '3.5'
 services:
-  web-service1:
-    container_name: myapp1
-    build: .
-    volumes:
-      - .:/app
-    environment:
-      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
-    depends_on:
-      - db-service
-  web-service2:
-    container_name: myapp2
+  web-service:
     build: .
     volumes:
       - .:/app

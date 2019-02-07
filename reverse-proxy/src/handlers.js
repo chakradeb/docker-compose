@@ -1,73 +1,35 @@
 const http = require('http');
-const querystring = require('querystring');
 
-const getHandler = function(service) {
-    return (req,res) => {
-        http.get(`http://${service.host}:${service.port}${req.url}`, (response) => {
-            const { statusCode } = response;
-    
-            let error;
-            if (statusCode !== 200) {
-                error = new Error('Request Failed.\n' +
-                            `Status Code: ${statusCode}`);
-            }
-            if (error) {
-                console.error(error.message);
-                response.resume();
-                return;
-            }
-    
-            response.setEncoding('utf8');
-            let rawData = '';
-            response.on('data', (chunk) => { rawData += chunk; });
-            response.on('end', () => {
-                res.send(rawData)
-            });
-        }).on('error', (e) => {
-            console.error(`Got error: ${e.message}`);
-        });
-    }
-}
+module.exports = (req, res) => {
+  let service = req.service;
 
-const postHandler = function(service) {
-    return (req,res) => {
-        const postData = querystring.stringify({
-            'number': req.body.number
-        });
-          
-        const options = {
-            hostname: service.host,
-            port: service.port,
-            path: req.url,
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'Content-Length': Buffer.byteLength(postData)
-            }
-        };
-          
-        const request = http.request(options, (response) => {
-            console.log(`STATUS: ${response.statusCode}`);
-            console.log(`HEADERS: ${JSON.stringify(response.headers)}`);
-            response.setEncoding('utf8');
-            response.on('data', (chunk) => {
-              console.log(`BODY: ${chunk}`);
-            });
-            response.on('end', () => {
-              res.redirect('/');
-            });
-        });
+  const options = {
+    hostname: service.host,
+    port: service.port,
+    path: req.url,
+    method: req.method,
+    headers: req.headers
+  };
 
-        request.on('error', (e) => {
-            console.error(`problem with request: ${e.message}`);
-        });
+  const request = http.request(options, (response) => {
+    console.log(`STATUS: ${response.statusCode}`);
+    console.log(`HEADERS: ${JSON.stringify(response.headers)}`);
+    let data = "";
+    response.setEncoding('utf8');
+    response.on('data', (chunk) => {
+      data += chunk;
+    });
+    response.on('end', () => {
+      res.status(response.statusCode)
+        .set(response.headers)
+        .send(data)
+    });
+  });
 
-        request.write(postData);
-        request.end();
-    }
-}
+  request.on('error', (e) => {
+    console.error(`problem with request: ${e.message}`);
+  });
 
-module.exports = {
-    getHandler,
-    postHandler
+  request.write(req.body);
+  request.end();
 }

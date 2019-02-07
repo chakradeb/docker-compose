@@ -1,12 +1,16 @@
 {
-    "services": [
-        {
-            "host": "myapp1",
-            "port": 8000
-        },
-        {
-            "host": "myapp2",
-            "port": 8000
-        }
-    ]
+  "services": [
+    {
+      "host": "compose_web-service_1",
+      "port": 8000
+    },
+    {
+      "host": "web-service_2",
+      "port": 8000
+    },
+    {
+      "host": "web-service_3",
+      "port": 8000
+    }
+  ]
 }

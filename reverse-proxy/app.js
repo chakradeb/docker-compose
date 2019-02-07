@@ -1,27 +1,30 @@
 const express = require('express');
 const morgan = require('morgan');
 
-const lib = require('./src/handlers.js');
-const config = require('./config.json');
+const handler = require('./src/handlers.js');
+const cycler = require('./src/cycler.js');
 
 const app = express();
 
-let services = config.services;
-let serviceIndex = 0;
-
-app.use(express.urlencoded({
-    extended: false
-}));
-app.use(morgan('combined'));
-app.use((req,res,next) => {
-    serviceIndex++;
-    next();
+app.use((req, _res, next) => {
+  req.body = "";
+  req.on("data", (chunk) => req.body += chunk);
+  req.on("end", () => next());
 });
 
-app.get('/',lib.getHandler(services[serviceIndex]))
-app.get('/numbers',lib.getHandler(services[serviceIndex]))
-app.get('/health',lib.getHandler(services[serviceIndex]))
+app.use(morgan('dev'));
 
-app.post('/',lib.postHandler(services[serviceIndex]))
+app.use((req, res, next) => {
+  cycler((service) => {
+    req.service = service;
+    console.log(`Forwarding to ${service.host}...`);
+    next();
+  }, () => {
+    console.log("Failed to find any running service");
+    res.status(500).send("Internal server error");
+  });
+});
+
+app.use(handler);
 
 module.exports = app;
