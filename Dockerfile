@@ -6,10 +6,10 @@ ENV PORT=8000
 
 EXPOSE 8000
 
-ADD package*.json ./
+COPY package*.json ./
 
 RUN npm install
 
-ADD . .
+COPY . .
 
 ENTRYPOINT ["npm", "start"]

@@ -1,6 +1,12 @@
 {
     "services": [
-        "myapp1",
-        "myapp2"
+        {
+            "host": "myapp1",
+            "port": 8000
+        },
+        {
+            "host": "myapp2",
+            "port": 8000
+        }
     ]
 }

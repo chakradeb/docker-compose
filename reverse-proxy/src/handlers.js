@@ -1,9 +1,9 @@
 const http = require('http');
 const querystring = require('querystring');
 
-const getHandler = function(server) {
+const getHandler = function(service) {
     return (req,res) => {
-        http.get(`http://${server}:8000${req.url}`, (response) => {
+        http.get(`http://${service.host}:${service.port}${req.url}`, (response) => {
             const { statusCode } = response;
     
             let error;
@@ -29,15 +29,15 @@ const getHandler = function(server) {
     }
 }
 
-const postHandler = function(host) {
+const postHandler = function(service) {
     return (req,res) => {
         const postData = querystring.stringify({
             'number': req.body.number
         });
           
         const options = {
-            hostname: host,
-            port: 8000,
+            hostname: service.host,
+            port: service.port,
             path: req.url,
             method: 'POST',
             headers: {
