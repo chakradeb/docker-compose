@@ -3,7 +3,10 @@ services:
   web-service:
     build: .
     volumes:
-      - .:/app
+      - ./lib:/app/lib
+      - ./public:/app/public
+      - ./app.js:/app/app.js
+      - ./server.js:/app/server.js
     environment:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
     depends_on:
@@ -12,7 +15,10 @@ services:
     container_name: myproxy
     build: ./reverse-proxy
     volumes:
-      - ./reverse-proxy:/app
+      - ./reverse-proxy/src:/app/src
+      - ./reverse-proxy/app.js:/app/app.js
+      - ./reverse-proxy/config.json:/app/config.json
+      - ./reverse-proxy/server.js:/app/server.js
     ports:
       - "8000:8000"
   db-service:

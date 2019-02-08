@@ -1,7 +1,7 @@
 {
   "services": [
     {
-      "host": "compose_web-service_1",
+      "host": "docker-compose_web-service_1",
       "port": 8000
     },
     {
