@@ -9,6 +9,9 @@ services:
       - ./server.js:/app/server.js
     environment:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+    networks:
+      - frontend
+      - backend
     depends_on:
       - db-service
   proxy-service:
@@ -19,6 +22,8 @@ services:
       - ./reverse-proxy/app.js:/app/app.js
       - ./reverse-proxy/config.json:/app/config.json
       - ./reverse-proxy/server.js:/app/server.js
+    networks:
+      - frontend
     ports:
       - "8000:8000"
   db-service:
@@ -26,6 +31,11 @@ services:
     image: postgres:alpine
     volumes:
       - psql-data:/var/lib/postgresql/data
+    networks:
+      - backend
 volumes:
   psql-data:
     driver: local
+networks: 
+  frontend:
+  backend:
